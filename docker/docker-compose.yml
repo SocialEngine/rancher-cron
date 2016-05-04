@@ -1,0 +1,5 @@
+rancher-cron:
+  labels:
+    io.rancher.container.create_agent: 'true'
+    io.rancher.container.agent.role: environment
+  image: socialengine/rancher-cron:latest

@@ -1,0 +1,43 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "htjvdG/znrHmFYRQBqA2vHrJsF4=",
+			"path": "github.com/Sirupsen/logrus",
+			"revision": "cd7d1bbe41066b6c1f19780f895901052150a575",
+			"revisionTime": "2016-04-25T09:32:37Z"
+		},
+		{
+			"checksumSHA1": "iIUYZyoanCQQTUaWsu8b+iOSPt4=",
+			"path": "github.com/gorilla/context",
+			"revision": "a8d44e7d8e4d532b6a27a02dd82abb31cc1b01bd",
+			"revisionTime": "2016-04-22T13:42:37Z"
+		},
+		{
+			"checksumSHA1": "/WoZGh9L9hFOcrU9d7rAeFPDy1U=",
+			"path": "github.com/gorilla/mux",
+			"revision": "9c19ed558d5df4da88e2ade9c8940d742aef0e7e",
+			"revisionTime": "2016-05-02T17:56:24Z"
+		},
+		{
+			"checksumSHA1": "bKP3cqoelNKVImQ7WFwzaUWrGrg=",
+			"path": "github.com/rancher/go-rancher-metadata",
+			"revision": "beb180ef575f061e28e9dca169d2c01a7e12d780",
+			"revisionTime": "2016-04-28T16:33:32Z"
+		},
+		{
+			"checksumSHA1": "vIgimabmRTB7N7oCZmyvoCeXGxk=",
+			"path": "github.com/rancher/go-rancher/client",
+			"revision": "80f15a052d778601e047286669edda02e83383cc",
+			"revisionTime": "2016-04-11T18:40:51Z"
+		},
+		{
+			"checksumSHA1": "CzLpoHWYgSP+mT3bcW/jt8epp5I=",
+			"path": "gopkg.in/robfig/cron.v2",
+			"revision": "be2e0b0deed5a68ffee390b4583a13aff8321535",
+			"revisionTime": "2015-01-07T22:02:07Z"
+		}
+	],
+	"rootPath": "github.com/socialengine/rancher-cron"
+}
