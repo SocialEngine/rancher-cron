@@ -2,6 +2,7 @@ package cattle
 
 import (
 	"fmt"
+
 	"github.com/rancher/go-rancher/client"
 )
 
@@ -33,21 +34,30 @@ func (c *CattleClient) GetContainerByUUID(uuid string) (*client.Container, error
 	}
 
 	containers, err := c.rancherClient.Container.List(opts)
-	
+
 	if err != nil {
 		return nil, err
 	}
-	
+
 	container := &containers.Data[0]
-	
+
 	return container, err
 }
 
-func (c *CattleClient) StartContainer(container *client.Container) (*client.Instance, error) {
-	if container.State != "stopped" {
-		return nil, fmt.Errorf("container is not stopped. Currently in [%s] state", container.State)
+func (c *CattleClient) StartContainerById(containerId string) (*client.Container, error) {
+	container, err := c.rancherClient.Container.ById(containerId)
+
+	if err != nil {
+		return container, err
 	}
-	return c.rancherClient.Container.ActionStart(container)
+
+	if container.State != "stopped" {
+		return container, fmt.Errorf("container is not stopped. Currently in [%s] state", container.State)
+	}
+
+	_, err = c.rancherClient.Container.ActionStart(container)
+
+	return container, err
 }
 
 func (c *CattleClient) TestConnect() error {

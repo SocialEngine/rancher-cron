@@ -149,13 +149,17 @@ func getCronFunction(schedule *model.Schedule) (func(), error) {
 	}).Info("adding container to cron")
 
 	return func() {
-		logrus.Debugf("starting container: %s", container.Name)
-		_, err := c.StartContainer(container)
+		container, err := c.StartContainerById(container.Id)
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
 				"containerId":   container.Id,
 				"containerUuid": container.Uuid,
 			}).Errorf("Failed to start container: %v", err)
+		} else {
+			logrus.WithFields(logrus.Fields{
+				"containerId":   container.Id,
+				"containerUuid": container.Uuid,
+			}).Debugf("started container: %s", container.Name)
 		}
 	}, nil
 }
