@@ -23,8 +23,8 @@ const (
 var (
 	debug = flag.Bool("debug", false, "Debug")
 
-	c  *cattle.CattleClient
-	m  *metadata.MetadataClient
+	c  *cattle.Client
+	m  *metadata.Client
 	cr *cron.Cron
 )
 
@@ -35,13 +35,13 @@ func setEnv() {
 		logrus.SetLevel(logrus.DebugLevel)
 	}
 
-	cattleUrl := os.Getenv("CATTLE_URL")
-	if len(cattleUrl) == 0 {
+	cattleURL := os.Getenv("CATTLE_URL")
+	if len(cattleURL) == 0 {
 		logrus.Fatalf("CATTLE_URL is not set")
 	}
 
-	cattleApiKey := os.Getenv("CATTLE_ACCESS_KEY")
-	if len(cattleApiKey) == 0 {
+	cattleAPIKey := os.Getenv("CATTLE_ACCESS_KEY")
+	if len(cattleAPIKey) == 0 {
 		logrus.Fatalf("CATTLE_ACCESS_KEY is not set")
 	}
 
@@ -51,7 +51,7 @@ func setEnv() {
 	}
 
 	//configure cattle client
-	cClient, err := cattle.NewCattleClient(cattleUrl, cattleApiKey, cattleSecretKey)
+	cClient, err := cattle.NewClient(cattleURL, cattleAPIKey, cattleSecretKey)
 
 	if err != nil {
 		logrus.Fatalf("Failed to configure cattle client: %v", err)
@@ -59,7 +59,7 @@ func setEnv() {
 	c = cClient
 
 	// configure metadata client
-	mClient, err := metadata.NewMetadataClient(cronLabelName)
+	mClient, err := metadata.NewClient(cronLabelName)
 	if err != nil {
 		logrus.Fatalf("Failed to configure rancher-metadata client: %v", err)
 	}
@@ -149,7 +149,7 @@ func getCronFunction(schedule *model.Schedule) (func(), error) {
 	}).Info("adding container to cron")
 
 	return func() {
-		container, err := c.StartContainerById(container.Id)
+		container, err := c.StartContainerByID(container.Id)
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
 				"containerId":   container.Id,

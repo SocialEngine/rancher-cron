@@ -6,13 +6,15 @@ import (
 	"github.com/rancher/go-rancher/client"
 )
 
-type CattleClient struct {
+// Client holds rancherClient and anything else that could be useful
+type Client struct {
 	rancherClient *client.RancherClient
 }
 
-func NewCattleClient(cattleUrl string, cattleAccessKey string, cattleSecretKey string) (*CattleClient, error) {
+// NewClient grabs config necessary and sets an inited client or returns an error
+func NewClient(cattleURL string, cattleAccessKey string, cattleSecretKey string) (*Client, error) {
 	apiClient, err := client.NewRancherClient(&client.ClientOpts{
-		Url:       cattleUrl,
+		Url:       cattleURL,
 		AccessKey: cattleAccessKey,
 		SecretKey: cattleSecretKey,
 	})
@@ -21,12 +23,13 @@ func NewCattleClient(cattleUrl string, cattleAccessKey string, cattleSecretKey s
 		return nil, err
 	}
 
-	return &CattleClient{
+	return &Client{
 		rancherClient: apiClient,
 	}, nil
 }
 
-func (c *CattleClient) GetContainerByUUID(uuid string) (*client.Container, error) {
+// GetContainerByUUID grabs a Container given a UUID
+func (c *Client) GetContainerByUUID(uuid string) (*client.Container, error) {
 	opts := &client.ListOpts{
 		Filters: map[string]interface{}{
 			"uuid": uuid,
@@ -44,8 +47,9 @@ func (c *CattleClient) GetContainerByUUID(uuid string) (*client.Container, error
 	return container, err
 }
 
-func (c *CattleClient) StartContainerById(containerId string) (*client.Container, error) {
-	container, err := c.rancherClient.Container.ById(containerId)
+// StartContainerByID starts a container given ContainerId or fails in cases its already running
+func (c *Client) StartContainerByID(containerID string) (*client.Container, error) {
+	container, err := c.rancherClient.Container.ById(containerID)
 
 	if err != nil {
 		return container, err
@@ -60,7 +64,8 @@ func (c *CattleClient) StartContainerById(containerId string) (*client.Container
 	return container, err
 }
 
-func (c *CattleClient) TestConnect() error {
+// TestConnect ensures we can query the API
+func (c *Client) TestConnect() error {
 	opts := &client.ListOpts{}
 	_, err := c.rancherClient.Label.List(opts)
 	return err

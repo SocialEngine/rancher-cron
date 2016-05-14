@@ -1,5 +1,7 @@
 Rancher Cron Service
 ========
+[![Go Report Card](https://goreportcard.com/badge/github.com/socialengine/rancher-cron)](https://goreportcard.com/report/github.com/socialengine/rancher-cron)
+
 This service is used to start containers on a specified schedule and 
 uses [robfig/cron](https://github.com/robfig/cron) cron package.
 

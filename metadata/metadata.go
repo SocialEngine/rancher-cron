@@ -11,18 +11,20 @@ import (
 )
 
 const (
-	metadataUrl = "http://rancher-metadata/latest"
+	metadataURL = "http://rancher-metadata/latest"
 )
 
-type MetadataClient struct {
+// Client is a Struct that holds all metadata-specific data
+type Client struct {
 	MetadataClient  *metadata.Client
 	EnvironmentName string
 	CronLabelName   string
 	Schedules       *model.Schedules
 }
 
-func NewMetadataClient(cronLabelName string) (*MetadataClient, error) {
-	m, err := metadata.NewClientAndWait(metadataUrl)
+// NewClient creates a new metadata client
+func NewClient(cronLabelName string) (*Client, error) {
+	m, err := metadata.NewClientAndWait(metadataURL)
 	if err != nil {
 		logrus.Fatalf("Failed to configure rancher-metadata: %v", err)
 	}
@@ -34,7 +36,7 @@ func NewMetadataClient(cronLabelName string) (*MetadataClient, error) {
 
 	schedules := make(model.Schedules)
 
-	return &MetadataClient{
+	return &Client{
 		MetadataClient:  m,
 		EnvironmentName: envName,
 		CronLabelName:   cronLabelName,
@@ -42,11 +44,13 @@ func NewMetadataClient(cronLabelName string) (*MetadataClient, error) {
 	}, nil
 }
 
-func (m *MetadataClient) GetVersion() (string, error) {
+// GetVersion grabs the version of metadata client we're using
+func (m *Client) GetVersion() (string, error) {
 	return m.MetadataClient.GetVersion()
 }
 
-func (m *MetadataClient) GetCronSchedules() (*model.Schedules, error) {
+// GetCronSchedules returns a map of schedules with ContainerUUID as a key
+func (m *Client) GetCronSchedules() (*model.Schedules, error) {
 	schedules := *m.Schedules
 	services, err := m.MetadataClient.GetServices()
 
@@ -72,12 +76,12 @@ func (m *MetadataClient) GetCronSchedules() (*model.Schedules, error) {
 		if ok {
 			// do not cleanup
 			existingSchedule.ToCleanup = false
-			
+
 			logrus.WithFields(logrus.Fields{
 				"uuid":           containerUUID,
 				"cronExpression": cronExpression,
 			}).Debugf("already have container")
-			
+
 			continue
 		}
 		//label exists, configure schedule
@@ -91,7 +95,7 @@ func (m *MetadataClient) GetCronSchedules() (*model.Schedules, error) {
 	return &schedules, nil
 }
 
-func (m *MetadataClient) getCronContainer(service metadata.Service) (string, error) {
+func (m *Client) getCronContainer(service metadata.Service) (string, error) {
 	containers := service.Containers
 
 	for _, container := range containers {
