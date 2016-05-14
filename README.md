@@ -6,14 +6,15 @@ This service is used to start containers on a specified schedule and
 uses [robfig/cron](https://github.com/robfig/cron) cron package.
 
 When this service is running on Rancher, it will poll [Rancher Metadata](http://docs.rancher.com/rancher/latest/en/rancher-services/metadata-service/)
-to find containers that have `io.rancher.cron.schedule` label set to 
-valid cron expression format (see below).
+to find containers that have `com.socialengine.rancher-cron.schedule` 
+label set to valid cron expression format (see below).
 
 It will automatically update itself with any new and removed containers 
 every 30 seconds.
 
-Once it finds a container with `io.rancher.cron.schedule` label, it will
-start that container on schedule specified by the value of that label.
+Once it finds a container with `com.socialengine.rancher-cron.schedule` 
+label, it will start that container on schedule specified by the value 
+of that label.
 
 You should not have _Auto Restart_ turned on and have scale of 1 for 
 services you wish to run as a cron container.
@@ -26,7 +27,7 @@ rancher-cron:
   labels:
     io.rancher.container.create_agent: 'true'
     io.rancher.container.agent.role: environment
-  image: socialengine/rancher-cron:v0.0.1
+  image: socialengine/rancher-cron:v0.1.0
 ```
 
 It is important to include both labels as Rancher will set `CATTLE_URL`, 

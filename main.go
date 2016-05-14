@@ -17,7 +17,7 @@ const (
 	poll = 1000
 	// if metadata wasn't updated in 1 min, force update would be executed
 	forceUpdateInterval = 10
-	cronLabelName       = "io.rancher.cron.schedule"
+	cronLabelName       = "com.socialengine.rancher-cron.schedule"
 )
 
 var (
