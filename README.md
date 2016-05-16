@@ -1,5 +1,6 @@
 Rancher Cron Service
 ========
+[![Docker Pulls](https://img.shields.io/docker/pulls/socialengine/rancher-cron.svg)](https://hub.docker.com/r/socialengine/rancher-cron/)
 [![Go Report Card](https://goreportcard.com/badge/github.com/socialengine/rancher-cron)](https://goreportcard.com/report/github.com/socialengine/rancher-cron)
 
 This service is used to start containers on a specified schedule and 
@@ -27,7 +28,7 @@ rancher-cron:
   labels:
     io.rancher.container.create_agent: 'true'
     io.rancher.container.agent.role: environment
-  image: socialengine/rancher-cron:v0.1.0
+  image: socialengine/rancher-cron:0.1.0
 ```
 
 It is important to include both labels as Rancher will set `CATTLE_URL`, 
@@ -36,7 +37,7 @@ feel free to set those manually.
 
 ### Debugging
 
-If something is not working as you expect it, you can enable debug output by modifying
+If something is not working as you expect, you can enable debug output by modifying
 the command to `rancher-cron -debug`. This is also helpful for submitting issues.
 
 ## CRON Expression Format
