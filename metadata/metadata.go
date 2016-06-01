@@ -66,37 +66,40 @@ func (m *Client) GetCronSchedules() (*model.Schedules, error) {
 		if !ok {
 			continue
 		}
-		containerUUID, err := m.getCronContainer(service)
+		containerUUIDs, err := m.getCronContainers(service)
 		if err != nil {
 			continue
 		}
 
-		existingSchedule, ok := schedules[containerUUID]
-		// we already have schedule for this container
-		if ok {
-			// do not cleanup
-			existingSchedule.ToCleanup = false
+		for _, containerUUID := range containerUUIDs {
+			existingSchedule, ok := schedules[containerUUID]
+			// we already have schedule for this container
+			if ok {
+				// do not cleanup
+				existingSchedule.ToCleanup = false
 
-			logrus.WithFields(logrus.Fields{
-				"uuid":           containerUUID,
-				"cronExpression": cronExpression,
-			}).Debugf("already have container")
+				logrus.WithFields(logrus.Fields{
+					"uuid":           containerUUID,
+					"cronExpression": cronExpression,
+				}).Debugf("already have container")
 
-			continue
+				continue
+			}
+			//label exists, configure schedule
+			schedule := model.NewSchedule()
+
+			schedule.CronExpression = cronExpression
+			schedule.ContainerUUID = containerUUID
+			schedules[containerUUID] = schedule
 		}
-		//label exists, configure schedule
-		schedule := model.NewSchedule()
-
-		schedule.CronExpression = cronExpression
-		schedule.ContainerUUID = containerUUID
-		schedules[containerUUID] = schedule
 	}
 
 	return &schedules, nil
 }
 
-func (m *Client) getCronContainer(service metadata.Service) (string, error) {
+func (m *Client) getCronContainers(service metadata.Service) ([]string, error) {
 	containers := service.Containers
+	var uuids []string
 
 	for _, container := range containers {
 		if len(container.ServiceName) == 0 {
@@ -112,10 +115,14 @@ func (m *Client) getCronContainer(service metadata.Service) (string, error) {
 			}
 		}
 
-		return container.UUID, nil
+		uuids = append(uuids, container.UUID)
 	}
 
-	return "", fmt.Errorf("could not find container UUID with %s", m.CronLabelName)
+	if len(uuids) > 0 {
+		return uuids, nil
+	}
+
+	return uuids, fmt.Errorf("could not find container UUID with %s", m.CronLabelName)
 }
 
 func markScheduleForCleanup(schedules *model.Schedules) {
