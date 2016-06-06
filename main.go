@@ -6,8 +6,8 @@ import (
 
 	"gopkg.in/robfig/cron.v2"
 
+	"github.com/nowait-tools/rancher-cron/metadata"
 	"github.com/socialengine/rancher-cron/cattle"
-	"github.com/socialengine/rancher-cron/metadata"
 	"github.com/socialengine/rancher-cron/model"
 
 	"github.com/Sirupsen/logrus"
