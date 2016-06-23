@@ -28,7 +28,7 @@ rancher-cron:
   labels:
     io.rancher.container.create_agent: 'true'
     io.rancher.container.agent.role: environment
-  image: socialengine/rancher-cron:0.1.0
+  image: socialengine/rancher-cron:0.2.0
 ```
 
 It is important to include both labels as Rancher will set `CATTLE_URL`, 
