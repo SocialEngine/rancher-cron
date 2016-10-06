@@ -7,10 +7,11 @@ This service is used to start containers on a specified schedule and
 uses [robfig/cron](https://github.com/robfig/cron) cron package.
 
 When this service is running on Rancher, it will poll [Rancher Metadata](http://docs.rancher.com/rancher/latest/en/rancher-services/metadata-service/)
-to find containers that have `com.socialengine.rancher-cron.schedule` 
-label set to valid cron expression format (see below).
+for all stacks in an environment to find services that 
+have `com.socialengine.rancher-cron.schedule` label set to 
+valid cron expression format (see below).
 
-It will automatically update itself with any new and removed containers 
+It will automatically update itself with any new and removed services 
 every 30 seconds.
 
 Once it finds a container with `com.socialengine.rancher-cron.schedule` 
