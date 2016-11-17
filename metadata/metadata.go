@@ -16,7 +16,7 @@ const (
 
 // Client is a Struct that holds all metadata-specific data
 type Client struct {
-	MetadataClient  *metadata.Client
+	MetadataClient  metadata.Client
 	EnvironmentName string
 	CronLabelName   string
 	Schedules       *model.Schedules
@@ -131,7 +131,7 @@ func markScheduleForCleanup(schedules *model.Schedules) {
 	}
 }
 
-func getEnvironmentName(m *metadata.Client) (string, error) {
+func getEnvironmentName(m metadata.Client) (string, error) {
 	timeout := 30 * time.Second
 	var err error
 	var stack metadata.Stack
