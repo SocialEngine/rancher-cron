@@ -1,9 +1,6 @@
 package model
 
-import (
-	"github.com/rancher/go-rancher/client"
-	"gopkg.in/robfig/cron.v2"
-)
+import "gopkg.in/robfig/cron.v2"
 
 // Schedule holds data related to an individual schedule such as cronId, schedule, ContainerUUID, etc
 type Schedule struct {
@@ -11,7 +8,7 @@ type Schedule struct {
 	CronExpression string
 	ContainerUUID  string
 	CronID         cron.EntryID
-	Container      client.Container
+	ServiceUUID    string
 }
 
 // Schedules is a simple collection of Schedule

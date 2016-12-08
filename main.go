@@ -9,6 +9,7 @@ import (
 	"github.com/socialengine/rancher-cron/cattle"
 	"github.com/socialengine/rancher-cron/metadata"
 	"github.com/socialengine/rancher-cron/model"
+	"github.com/socialengine/rancher-cron/scheduler"
 
 	"github.com/Sirupsen/logrus"
 )
@@ -25,6 +26,7 @@ var (
 
 	c  *cattle.Client
 	m  *metadata.Client
+	s  *scheduler.Scheduler
 	cr *cron.Cron
 )
 
@@ -64,6 +66,11 @@ func setEnv() {
 		logrus.Fatalf("Failed to configure rancher-metadata client: %v", err)
 	}
 	m = mClient
+
+	s, err = scheduler.NewScheduler(cronLabelName, m, c)
+	if err != nil {
+		logrus.Fatalf("Failed to create the scheduler: %v", err)
+	}
 }
 
 func main() {
@@ -82,7 +89,7 @@ func main() {
 }
 
 func discoverCronContainers() {
-	sched, err := m.GetCronSchedules()
+	sched, err := s.GetCronSchedules()
 	schedules := *sched
 
 	if err != nil {
@@ -90,7 +97,7 @@ func discoverCronContainers() {
 	}
 
 	if len(schedules) == 0 {
-		logrus.Errorf("Could not find any containers with label %s", cronLabelName)
+		logrus.Errorf("Could not find any active containers with label %s", cronLabelName)
 	}
 
 	// clean up old entities
@@ -118,12 +125,12 @@ func discoverCronContainers() {
 
 func clearCron() {
 	cleanedJobs := 0
-	for key, schedule := range *m.Schedules {
+	for key, schedule := range *s.Schedules {
 		if !schedule.ToCleanup {
 			continue
 		}
 		cr.Remove(schedule.CronID)
-		delete(*m.Schedules, key)
+		delete(*s.Schedules, key)
 		logrus.WithFields(logrus.Fields{
 			"schedule":      schedule.CronExpression,
 			"containerUUID": schedule.ContainerUUID,
