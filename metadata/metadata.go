@@ -32,7 +32,7 @@ func NewClient(cronLabelName string) (*Client, error) {
 	}
 
 	return &Client{
-		MetadataClient:  m,
+		MetadataClient:  *m,
 		EnvironmentName: envName,
 		CronLabelName:   cronLabelName,
 	}, nil
@@ -77,7 +77,7 @@ func (m *Client) GetContainersFromService(service metadata.Service) ([]string, e
 	return uuids, fmt.Errorf("could not find container UUID with %s", m.CronLabelName)
 }
 
-func getEnvironmentName(m metadata.Client) (string, error) {
+func getEnvironmentName(m *metadata.Client) (string, error) {
 	timeout := 30 * time.Second
 	var err error
 	var stack metadata.Stack
