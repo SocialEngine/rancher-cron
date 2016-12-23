@@ -47,11 +47,9 @@ func (m *Scheduler) GetCronSchedules() (*model.Schedules, error) {
 		}
 
 		cattleService, err := m.CattleClient.GetServiceByUUID(service.UUID)
-		if err == nil {
-			if cattleService.State == "inactive" {
-				logrus.Debugf("ignoring inactive service uuid %s", service.UUID)
-				continue
-			}
+		if err == nil && cattleService.State == "inactive" {
+			logrus.Debugf("ignoring inactive service uuid %s", service.UUID)
+			continue
 		}
 
 		containerUUIDs, err := m.MetadataClient.GetContainersFromService(service)
