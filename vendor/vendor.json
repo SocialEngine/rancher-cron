@@ -21,8 +21,8 @@
 			"revisionTime": "2016-05-02T17:56:24Z"
 		},
 		{
-			"checksumSHA1": "bKP3cqoelNKVImQ7WFwzaUWrGrg=",
-			"path": "github.com/rancher/go-rancher-metadata",
+			"checksumSHA1": "cQcdWtP2zDtOdlYEqU1pV4CyK1A=",
+			"path": "github.com/rancher/go-rancher-metadata/metadata",
 			"revision": "beb180ef575f061e28e9dca169d2c01a7e12d780",
 			"revisionTime": "2016-04-28T16:33:32Z"
 		},
