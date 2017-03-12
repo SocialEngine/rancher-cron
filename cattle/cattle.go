@@ -28,6 +28,25 @@ func NewClient(cattleURL string, cattleAccessKey string, cattleSecretKey string)
 	}, nil
 }
 
+// GetServiceByUUID grabs a Service given a UUID
+func (c *Client) GetServiceByUUID(uuid string) (*client.Service, error) {
+	opts := &client.ListOpts{
+		Filters: map[string]interface{}{
+			"uuid": uuid,
+		},
+	}
+
+	services, err := c.rancherClient.Service.List(opts)
+
+	if err != nil {
+		return nil, err
+	}
+
+	service := &services.Data[0]
+
+	return service, err
+}
+
 // GetContainerByUUID grabs a Container given a UUID
 func (c *Client) GetContainerByUUID(uuid string) (*client.Container, error) {
 	opts := &client.ListOpts{

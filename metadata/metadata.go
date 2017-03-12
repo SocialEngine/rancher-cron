@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/socialengine/rancher-cron/model"
-
 	"github.com/Sirupsen/logrus"
 	"github.com/rancher/go-rancher-metadata/metadata"
 )
@@ -16,10 +14,9 @@ const (
 
 // Client is a Struct that holds all metadata-specific data
 type Client struct {
-	MetadataClient  *metadata.Client
+	MetadataClient  metadata.Client
 	EnvironmentName string
 	CronLabelName   string
-	Schedules       *model.Schedules
 }
 
 // NewClient creates a new metadata client
@@ -34,13 +31,10 @@ func NewClient(cronLabelName string) (*Client, error) {
 		logrus.Fatalf("Error reading stack info: %v", err)
 	}
 
-	schedules := make(model.Schedules)
-
 	return &Client{
-		MetadataClient:  m,
+		MetadataClient:  *m,
 		EnvironmentName: envName,
 		CronLabelName:   cronLabelName,
-		Schedules:       &schedules,
 	}, nil
 }
 
@@ -49,55 +43,13 @@ func (m *Client) GetVersion() (string, error) {
 	return m.MetadataClient.GetVersion()
 }
 
-// GetCronSchedules returns a map of schedules with ContainerUUID as a key
-func (m *Client) GetCronSchedules() (*model.Schedules, error) {
-	schedules := *m.Schedules
-	services, err := m.MetadataClient.GetServices()
-
-	if err != nil {
-		logrus.Infof("Error reading services %v", err)
-		return &schedules, err
-	}
-
-	markScheduleForCleanup(m.Schedules)
-
-	for _, service := range services {
-		cronExpression, ok := service.Labels[m.CronLabelName]
-		if !ok {
-			continue
-		}
-		containerUUIDs, err := m.getCronContainers(service)
-		if err != nil {
-			continue
-		}
-
-		for _, containerUUID := range containerUUIDs {
-			existingSchedule, ok := schedules[containerUUID]
-			// we already have schedule for this container
-			if ok {
-				// do not cleanup
-				existingSchedule.ToCleanup = false
-
-				logrus.WithFields(logrus.Fields{
-					"uuid":           containerUUID,
-					"cronExpression": cronExpression,
-				}).Debugf("already have container")
-
-				continue
-			}
-			//label exists, configure schedule
-			schedule := model.NewSchedule()
-
-			schedule.CronExpression = cronExpression
-			schedule.ContainerUUID = containerUUID
-			schedules[containerUUID] = schedule
-		}
-	}
-
-	return &schedules, nil
+// GetServices returns the services from the metadata client
+func (m *Client) GetServices() ([]metadata.Service, error) {
+	return m.MetadataClient.GetServices()
 }
 
-func (m *Client) getCronContainers(service metadata.Service) ([]string, error) {
+// GetContainersFromService returns an array of UUIDs for the containers within a service
+func (m *Client) GetContainersFromService(service metadata.Service) ([]string, error) {
 	containers := service.Containers
 	var uuids []string
 
@@ -123,12 +75,6 @@ func (m *Client) getCronContainers(service metadata.Service) ([]string, error) {
 	}
 
 	return uuids, fmt.Errorf("could not find container UUID with %s", m.CronLabelName)
-}
-
-func markScheduleForCleanup(schedules *model.Schedules) {
-	for _, schedule := range *schedules {
-		schedule.ToCleanup = true
-	}
 }
 
 func getEnvironmentName(m *metadata.Client) (string, error) {
