@@ -21,20 +21,32 @@ of that label.
 You should not have _Auto Restart_ turned on and have scale of 1 for 
 services you wish to run as a cron container.
 
+If you start your containers with a `docker-compose.yml`, add a label with: `io.rancher.container.start_once: 'true'`.
+
 ## Running on Rancher
 
-Use following `docker-compose.yml`
+Use a `docker-compose.yml` like the following:
 ```yml
-rancher-cron:
-  labels:
-    io.rancher.container.create_agent: 'true'
-    io.rancher.container.agent.role: environment
-  image: socialengine/rancher-cron:0.2.0
+version: '2'
+services:
+  rancher-cron:
+    labels:
+      io.rancher.container.create_agent: 'true'
+      io.rancher.container.agent.role: environment
+    image: socialengine/rancher-cron:0.2.0
+  my-container:
+    image: my-container-image
+    labels:
+      io.rancher.container.start_once: 'true'
+      com.socialengine.rancher-cron.schedule: "@daily"
 ```
 
-It is important to include both labels as Rancher will set `CATTLE_URL`, 
+It is important to include both labels (`io.rancher.container.create_agent`
+     and `io.rancher.container.agent.role`) as Rancher will set `CATTLE_URL`, 
 `CATTLE_ACCESS_KEY`, and `CATTLE_SECRET_KEY`. If you want a bit more control,
 feel free to set those manually.
+
+Also, make sure you the label for `io.rancher.container.start_once`, as it will tell Rancher that the container will run and then "stop", but the service will remain "active". Otherwise, Rancher would try to restart the container everytime it stops. And if you "stop" it manually (deactivating the service), `rancher-cron` won't be able to start your container on the normal schedule.
 
 ### Debugging
 
