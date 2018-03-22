@@ -74,11 +74,13 @@ func (c *Client) StartContainerByID(containerID string) (*client.Container, erro
 		return container, err
 	}
 
-	if container.State != "stopped" {
-		return container, fmt.Errorf("container is not stopped. Currently in [%s] state", container.State)
+	if container.State == "stopped" {
+		_, err = c.rancherClient.Container.ActionStart(container)
+	} else if container.State == "running" {
+		_, err = c.rancherClient.Container.ActionRestart(container)
+	} else {
+		err = fmt.Errorf("container is not stopped and running. Currently in [%s] state", container.State)
 	}
-
-	_, err = c.rancherClient.Container.ActionStart(container)
 
 	return container, err
 }
